@@ -1,88 +1,105 @@
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
+
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
+
 
 // puente H
 int IN1 = 24;
 int IN2 = 26;
 
 // sensor de color
-//  int S0 = 37;
-//  int S1 = 38;
-//  int S2 = 39;
-//  int S3 = 40;
-//  int SALIDA_TCS = 41;
+ int S0 = 37;
+ int S1 = 38;
+ int S2 = 39;
+ int S3 = 40;
+ int salidaTCS = 41;
 
+ int numeroProcesos; 
+ String rojoBinario,verdeBinario,azulBinario;
 
-void setup() {
+void setup(void) {
   // put your setup code here, to run once:
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
-  // pinMode(S0,OUTPUT);
-  // pinMode(S1,OUTPUT);
-  // pinMode(S2, OUTPUT);
-  // pinMode(S3, OUTPUT);
-  // pinMode(SALIDA_TCS, INPUT);
 
-  // digitalWrite(S0, HIGH);
-  // digitalWrite(S1, LOW);
+    
+ 
 
-  //Serial.begin(9600);
+  //pinMode(IN1, OUTPUT);
+  //pinMode(IN2, OUTPUT);
+
+  numeroProcesos = 0;
+
+  Serial.begin(9600);
+
+  if (tcs.begin()) {
+    Serial.println("Buscando sensor");
+  } else {
+    Serial.println("No se encontró el sensor");
+    while (1);
+  }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  motorReductorIzquierdaADerecha();
+  // motorReductorIzquierdaADerecha();
   
-  delay(5000);
+  // delay(5000);
 
-  apagarMotorReductor();
+  // apagarMotorReductor();
 
-  delay(4000);
+  // delay(4000);
 
-  motorReductorDerechaAIzquierda();
+  // motorReductorDerechaAIzquierda();
 
-  delay(5000);
+  // delay(5000);
 
-  apagarMotorReductor();
+  // apagarMotorReductor();
 
-  delay(4000);
+  // delay(4000);
   
-  // Serial.print(IN1);
-  // Serial.print(IN1);
-
+  tomaDeColor();
 }
-/*
+
 void tomaDeColor(){
-  // rojo
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,LOW);
-  int rojo = pulseIn(SALIDA_TCS, LOW);
-  delay(200);
+ 
+  float rojo, verde, azul;
 
-  // verde
-  digitalWrite(S2,HIGH);
-  digitalWrite(S3,HIGH);
-  int verde = pulseIn(SALIDA_TCS, LOW);
-  delay(200);
+  tcs.getRGB(&rojo,&verde,&azul);
 
-  // azul
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,HIGH);
-  int rojo = pulseIn(SALIDA_TCS, LOW);
-  delay(200);
+  // Serial.print("Rojo: "); Serial.print(int(rojo));
+  // Serial.print("Verde: "); Serial.print(int(verde));
+  // Serial.print("Azul: "); Serial.print(int(azul));
+  // Serial.println(" ");
+  // delay(2000);
+  // Serial.println("\n\nRojo" + String(rojo));
+  // Serial.println(obtenerBinario(rojo));
 
-  Serial.print("R:");
-  Serial.print(rojo);
-
-  Serial.print("\t");
+  rojoBinario = obtenerBinario(rojo);
+  verdeBinario = obtenerBinario(verde);
+  azulBinario = obtenerBinario(azul);
   
-  Serial.print("V:");
-  Serial.print(verde);
+  /*
+    Rango verde R: 60 a 110, V: 90 a 132, A: 50 a 90
+    Rango naranja R: 140 a 190, V: 30 a 60, A: 20 a 55
+    Rango rojo: R: 90 a 180, V: 40 a 75, A: 35 a 70 
+  */
+  if(rojoBinario <= "0000000001101110" && rojoBinario >= "0000000000111100" && 
+     obtenerBinario(verde) >= "0000000001011010" && obtenerBinario(verde) <= "0000000010000100" && 
+     obtenerBinario(azul) >= "0000000000110010" && obtenerBinario(azul) <= "0000000001011010"){
+    Serial.println("Color Verde " + rojoBinario + " " + verdeBinario + " " + azulBinario);
+    
+  } else if (rojo <= 190 && rojo >= 140 && verde >= 30 && verde <= 60 && azul >= 20 && azul <= 55) {
+    Serial.println("Naranja");
+  } else if (rojo <= 180 && rojo >= 90 && verde >= 40 && verde <= 75 && azul >= 35 && azul <= 70) {
+    Serial.println("Rojo");
+  } else {
+    Serial.println("No valido: " + String(rojo) + " " + String(verde) + " " + String(azul));
+  }
 
-  Serial.print("\t");
-
-  Serial.print("A:");
-  Serial.println(azul);
-}*/
+  delay(2000);
+  
+}
 
 
 void motorReductorIzquierdaADerecha(){
@@ -99,4 +116,12 @@ void motorReductorDerechaAIzquierda(){
 void apagarMotorReductor(){
   digitalWrite(IN1,LOW);
   digitalWrite(IN2,LOW);
+}
+
+String obtenerBinario(int numero) {
+  String binario = "";
+  for (int i = 15; i >= 0; i--) {
+    binario += String((numero >> i) & 1);
+  }
+  return binario;
 }
