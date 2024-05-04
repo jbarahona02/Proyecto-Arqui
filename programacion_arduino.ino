@@ -67,11 +67,11 @@ void tomaDeColor(){
 
   tcs.getRGB(&rojo,&verde,&azul);
 
-  // Serial.print("Rojo: "); Serial.print(int(rojo));
-  // Serial.print("Verde: "); Serial.print(int(verde));
-  // Serial.print("Azul: "); Serial.print(int(azul));
-  // Serial.println(" ");
- // delay(2000);
+  Serial.print("Rojo: "); Serial.print(int(rojo));
+  Serial.print("Verde: "); Serial.print(int(verde));
+  Serial.print("Azul: "); Serial.print(int(azul));
+  Serial.println(" ");
+ //delay(2000);
   // Serial.println("\n\nRojo" + String(rojo));
   // Serial.println(obtenerBinario(rojo));
 
@@ -80,15 +80,15 @@ void tomaDeColor(){
   azulBinario = obtenerBinario(azul);
   
   /*
-    Rango verde R: 60 a 110, V: 90 a 132, A: 50 a 90
-    Rango naranja R: 140 a 192, V: 30 a 60, A: 20 a 60
+    Rango verde R: 60 a 110, V: 90 a 132, A: 40 a 90
+    Rango naranja R: 165 a 192, V: 30 a 60, A: 20 a 60
     Rango rojo: R: 90 a 180, V: 40 a 105, A: 35 a 105
   */
-  if(rojoBinario <= "0000000001101110" && rojoBinario >= "0000000000111100" && 
+  if(rojoBinario <= "0000000001101110" && rojoBinario >= "0000000000101000" && 
      verdeBinario >= "0000000001011010" && verdeBinario <= "0000000010000100" && 
      azulBinario >= "0000000000110010" && azulBinario <= "0000000001011010"){
       Serial.println("Detecto color verde " + rojoBinario + " " + verdeBinario + " " + azulBinario);
-  } else if (rojoBinario <= "0000000011000000" && rojoBinario >= "0000000010001100" && 
+  } else if (rojoBinario <= "0000000011000000" && rojoBinario >= "0000000010100101" && 
     verdeBinario >= "0000000000011110" && verdeBinario <= "0000000000111100" && 
     azulBinario >= "0000000000010100" && azulBinario <= "0000000000111100") {
     Serial.println("Detecto color naranja " + rojoBinario + " " + verdeBinario + " " + azulBinario);
